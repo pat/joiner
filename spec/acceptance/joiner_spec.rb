@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'Joiner' do
   it "handles has many associations" do
-    joiner = Joiner.new User
+    joiner = Joiner::Joins.new User
     joiner.add_join_to [:articles]
 
     sql = User.joins(joiner.join_values).to_sql
@@ -10,7 +10,7 @@ describe 'Joiner' do
   end
 
   it "handles multiple has many associations separately" do
-    joiner = Joiner.new User
+    joiner = Joiner::Joins.new User
     joiner.add_join_to [:articles]
     joiner.add_join_to [:articles, :comments]
 
@@ -20,7 +20,7 @@ describe 'Joiner' do
   end
 
   it "handles multiple has many associations together" do
-    joiner = Joiner.new User
+    joiner = Joiner::Joins.new User
     joiner.add_join_to [:articles, :comments]
 
     sql = User.joins(joiner.join_values).to_sql
@@ -29,7 +29,7 @@ describe 'Joiner' do
   end
 
   it "handles a belongs to association" do
-    joiner = Joiner.new Comment
+    joiner = Joiner::Joins.new Comment
     joiner.add_join_to [:article]
 
     sql = Comment.joins(joiner.join_values).to_sql
@@ -37,7 +37,7 @@ describe 'Joiner' do
   end
 
   it "handles both belongs to and has many associations separately" do
-    joiner = Joiner.new Article
+    joiner = Joiner::Joins.new Article
     joiner.add_join_to [:user]
     joiner.add_join_to [:comments]
 
@@ -47,7 +47,7 @@ describe 'Joiner' do
   end
 
   it "handles both belongs to and has many associations together" do
-    joiner = Joiner.new Article
+    joiner = Joiner::Joins.new Article
     joiner.add_join_to [:user, :comments]
 
     sql = Article.joins(joiner.join_values).to_sql
@@ -56,7 +56,7 @@ describe 'Joiner' do
   end
 
   it "distinguishes joins via different relationships" do
-    joiner = Joiner.new Article
+    joiner = Joiner::Joins.new Article
     joiner.add_join_to [:comments]
     joiner.add_join_to [:user, :comments]
 
