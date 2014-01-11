@@ -1,6 +1,12 @@
-class Joiner::Associations
+class Joiner::Path
+  AGGREGATE_MACROS = [:has_many, :has_and_belongs_to_many]
+
   def initialize(base, stack)
     @base, @stack = base, stack
+  end
+
+  def aggregate?
+    macros.any? { |macro| AGGREGATE_MACROS.include? macro }
   end
 
   def macros

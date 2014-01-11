@@ -12,10 +12,6 @@ class Joiner::Joins
     join_for(stack)
   end
 
-  def aggregate_for?(stack)
-    Joiner::Associations.new(model, stack).macros.any? { |macro| [:has_many, :has_and_belongs_to_many].include? macro }
-  end
-
   def alias_for(stack)
     return model.quoted_table_name if stack.empty?
 
@@ -24,15 +20,6 @@ class Joiner::Joins
 
   def join_values
     @joins.values.compact
-  end
-
-  def model_for(stack)
-    Joiner::Associations.new(model, stack).model
-    # return model if stack.empty?
-
-    # stack.inject(model) { |klass, reference|
-    #   klass.reflect_on_association(reference).klass
-    # }
   end
 
   private
