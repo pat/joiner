@@ -17,7 +17,7 @@ gem install joiner --version 0.1.0
 First, create a join collection, based on an ActiveRecord model:
 
 ```ruby
-joiner = Joiner.new user
+joiner = Joiner::Joins.new user
 ```
 
 Then you can add joins for a given association path. For example, if User has many articles, and articles have many comments:
@@ -25,12 +25,6 @@ Then you can add joins for a given association path. For example, if User has ma
 ```ruby
 joiner.add_join_to [:articles]
 joiner.add_join_to [:articles, :comments]
-```
-
-You can also check if a given association path will return potentially more than one record (thus perhaps requiring aggregation):
-
-```ruby
-joiner.aggregate_for?([:articles, :comments]) #=> true
 ```
 
 If you need the table/join alias for a given association path, just ask for it:
@@ -45,10 +39,12 @@ And once you've loaded up all the joins, you'll want something you can push out 
 User.joins(joiner.join_values)
 ```
 
-If you also need to know the model at the end of an association tree, there's a helper method for that:
+You can also check if a given association path will return potentially more than one record (thus perhaps requiring aggregation), or find out what the model at the end of the path is:
 
 ```ruby
-joiner.model_for([:articles, :comments]) #=> Comment
+path = Joiner::Path.new(User, [:articles, :comments])
+path.aggregate? #=> true
+path.model      #=> Comment
 ```
 
 ## Contributing
