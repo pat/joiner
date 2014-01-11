@@ -25,7 +25,11 @@ class Joiner::Path
     klass = base
     path.collect { |reference|
       klass.reflect_on_association(reference).tap { |reflection|
-        return [] if reflection.nil?
+        if reflection.nil?
+          raise Joiner::AssociationNotFound,
+            "No association matching #{base.name}, #{path.join(', ')}"
+        end
+
         klass = reflection.klass
       }
     }
