@@ -8,14 +8,14 @@ class Joiner::Joins
     @joins = ActiveSupport::OrderedHash.new
   end
 
-  def add_join_to(stack)
-    join_for(stack)
+  def add_join_to(path)
+    join_for(path)
   end
 
-  def alias_for(stack)
-    return model.quoted_table_name if stack.empty?
+  def alias_for(path)
+    return model.quoted_table_name if path.empty?
 
-    join_for(stack).aliased_table_name
+    join_for(path).aliased_table_name
   end
 
   def join_values
@@ -28,11 +28,11 @@ class Joiner::Joins
     @base ||= JoinDependency.new model, [], []
   end
 
-  def join_for(stack)
-    @joins[stack] ||= begin
-      reflection = reflection_for stack
+  def join_for(path)
+    @joins[path] ||= begin
+      reflection = reflection_for path
       reflection.nil? ? nil : JoinDependency::JoinAssociation.new(
-        reflection, base, parent_join_for(stack)
+        reflection, base, parent_join_for(path)
       ).tap { |join|
         join.join_type = Arel::OuterJoin
 
@@ -41,27 +41,27 @@ class Joiner::Joins
     end
   end
 
-  def joins_for(stack)
-    if stack.length == 1
-      [join_for(stack)]
+  def joins_for(path)
+    if path.length == 1
+      [join_for(path)]
     else
-      [joins_for(stack[0..-2]), join_for(stack)].flatten
+      [joins_for(path[0..-2]), join_for(path)].flatten
     end
   end
 
-  def parent_for(stack)
-    stack.length == 1 ? base : join_for(stack[0..-2])
+  def parent_for(path)
+    path.length == 1 ? base : join_for(path[0..-2])
   end
 
-  def parent_join_for(stack)
-    stack.length == 1 ? base.join_base : parent_for(stack)
+  def parent_join_for(path)
+    path.length == 1 ? base.join_base : parent_for(path)
   end
 
-  def reflection_for(stack)
-    parent = parent_for(stack)
+  def reflection_for(path)
+    parent = parent_for(path)
     klass  = parent.respond_to?(:base_klass) ? parent.base_klass :
       parent.active_record
-    klass.reflections[stack.last]
+    klass.reflections[path.last]
   end
 
   def rewrite_conditions_for(join)
