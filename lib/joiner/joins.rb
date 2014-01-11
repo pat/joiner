@@ -1,0 +1,3 @@
+class Joiner::Joins
+  #
+end

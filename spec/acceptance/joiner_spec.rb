@@ -63,22 +63,4 @@ describe 'Joiner' do
     expect(joiner.alias_for([:comments])).to eq('comments')
     expect(joiner.alias_for([:user, :comments])).to eq('comments_users')
   end
-
-  it "indicates aggregation for has many associations" do
-    joiner = Joiner.new User
-
-    expect(joiner.aggregate_for?([:articles])).to be_true
-  end
-
-  it "indicates non-aggregation for belongs to association" do
-    joiner = Joiner.new Article
-
-    expect(joiner.aggregate_for?([:user])).to be_false
-  end
-
-  it "determines the underlying model for an association path" do
-    joiner = Joiner.new User
-
-    expect(joiner.model_for([:articles, :comments])).to eq(Comment)
-  end
 end

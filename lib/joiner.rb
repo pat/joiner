@@ -13,13 +13,7 @@ class Joiner
   end
 
   def aggregate_for?(stack)
-    return false if stack.empty?
-
-    joins_for(stack).compact.any? { |join|
-      [:has_many, :has_and_belongs_to_many].include?(
-        join.reflection.macro
-      )
-    }
+    Joiner::Associations.new(model, stack).macros.any? { |macro| [:has_many, :has_and_belongs_to_many].include? macro }
   end
 
   def alias_for(stack)
@@ -33,10 +27,12 @@ class Joiner
   end
 
   def model_for(stack)
-    return model if stack.empty?
+    Joiner::Associations.new(model, stack).model
+    # return model if stack.empty?
 
-    join = join_for(stack)
-    join.nil? ? nil : join.reflection.klass
+    # stack.inject(model) { |klass, reference|
+    #   klass.reflect_on_association(reference).klass
+    # }
   end
 
   private
@@ -96,3 +92,5 @@ class Joiner
     end
   end
 end
+
+require 'joiner/associations'
