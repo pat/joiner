@@ -33,5 +33,11 @@ describe 'Paths' do
 
       expect(path.model).to eq(User)
     end
+
+    it "returns nil if the path is invalid" do
+      path = Joiner::Path.new User, [:articles, :likes]
+
+      expect(path.model).to be_nil
+    end
   end
 end

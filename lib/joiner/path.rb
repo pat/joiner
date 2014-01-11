@@ -14,7 +14,7 @@ class Joiner::Path
   end
 
   def model
-    stack.empty? ? base : reflections.last.klass
+    stack.empty? ? base : reflections.last.try(:klass)
   end
 
   private
@@ -25,6 +25,7 @@ class Joiner::Path
     klass = base
     stack.collect { |reference|
       klass.reflect_on_association(reference).tap { |reflection|
+        return [] if reflection.nil?
         klass = reflection.klass
       }
     }
