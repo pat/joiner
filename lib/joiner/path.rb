@@ -24,10 +24,9 @@ class Joiner::Path
   def reflections
     klass = base
     stack.collect { |reference|
-      reflection = klass.reflect_on_association(reference)
-      klass      = reflection.klass
-
-      reflection
+      klass.reflect_on_association(reference).tap { |reflection|
+        klass = reflection.klass
+      }
     }
   end
 end
