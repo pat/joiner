@@ -13,9 +13,10 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(spec)/})
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency 'activerecord', ['>= 3.1.0', '< 4.1.0']
+  spec.add_runtime_dependency 'activerecord', '>= 4.1.0.beta1'
 
   spec.add_development_dependency 'combustion',  '~> 0.5.1'
+  spec.add_development_dependency 'rails',       '>= 4.1.0.beta1'
   spec.add_development_dependency 'rspec-rails', '~> 2.14.1'
   spec.add_development_dependency 'sqlite3',     '~> 1.3.8'
 end
