@@ -4,78 +4,94 @@ class Joiner::Joins
   attr_reader :model
 
   def initialize(model)
-    @model = model
-    @joins = ActiveSupport::OrderedHash.new
+    @model       = model
+    @base        = JoinDependency.new model, [], []
+    @joins_cache = ActiveSupport::OrderedHash.new
   end
 
   def add_join_to(path)
-    join_for(path)
+    @joins_cache[path] ||= build_join(path)
   end
 
   def alias_for(path)
-    return model.quoted_table_name if path.empty?
-
-    join_for(path).aliased_table_name
+    return model.table_name if path.empty?
+    add_join_to(path).aliased_table_name
   end
 
   def join_values
-    @joins.values.compact
+    @base
   end
 
   private
 
-  def base
-    @base ||= JoinDependency.new model, [], []
+  def build_join(path)
+    if join = find_join(path)
+      return join
+    end
+
+    base_node, short_path = relative_path(path)
+
+    join = build_join_association(short_path, base_node.base_klass)
+    base_node.children << join
+    construct_tables! base_node, join
+
+    find_join(path)
   end
 
-  def join_for(path)
-    @joins[path] ||= begin
-      reflection = reflection_for path
-      reflection.nil? ? nil : JoinDependency::JoinAssociation.new(
-        reflection, base, parent_join_for(path)
-      ).tap { |join|
-        join.join_type = Arel::OuterJoin
+  def build_join_association(path, base_class)
+    return nil if path.empty?
 
-        rewrite_conditions_for join
-      }
+    step = path.first
+    reflection = find_reflection(step, base_class)
+    reflection.check_validity!
+
+    JoinDependency::JoinAssociation.new reflection, [build_join_association(path[1..-1], reflection.klass)].compact
+  end
+
+  def find_join(path, base = nil)
+    base ||= @base.join_root
+
+    return base if path.empty?
+
+    if next_step = base.children.detect{ |c| c.reflection.name == path.first }
+      find_join path[1..-1], next_step
     end
   end
 
-  def joins_for(path)
-    if path.length == 1
-      [join_for(path)]
-    else
-      [joins_for(path[0..-2]), join_for(path)].flatten
-    end
-  end
+  def relative_path(path)
+    short_path = []
+    test_path = path.dup
 
-  def parent_for(path)
-    path.length == 1 ? base : join_for(path[0..-2])
-  end
-
-  def parent_join_for(path)
-    path.length == 1 ? base.join_base : parent_for(path)
-  end
-
-  def reflection_for(path)
-    parent = parent_for(path)
-    klass  = parent.respond_to?(:base_klass) ? parent.base_klass :
-      parent.active_record
-    klass.reflections[path.last]
-  end
-
-  def rewrite_conditions_for(join)
-    if join.respond_to?(:scope_chain)
-      conditions = Array(join.scope_chain).flatten
-    else
-      conditions = Array(join.conditions).flatten
+    while test_path.size > 1
+      short_path << test_path.pop
+      node = find_join(test_path)
+      return [node, short_path] if node
     end
 
-    conditions.each do |condition|
-      next unless condition.is_a?(String)
+    [@base.join_root, path]
+  end
 
-      condition.gsub! /::ts_join_alias::/,
-        model.connection.quote_table_name(join.parent.aliased_table_name)
-    end
+  def find_reflection(name, klass)
+    klass.reflect_on_association(name)
+  end
+
+  def table_aliases_for(parent, node)
+    node.reflection.chain.map { |reflection|
+      @base.alias_tracker.aliased_table_for(
+        reflection.table_name,
+        table_alias_for(reflection, parent, reflection != node.reflection)
+      )
+    }
+  end
+
+  def construct_tables!(parent, node)
+    node.tables = table_aliases_for(parent, node)
+    node.children.each { |child| construct_tables! node, child }
+  end
+
+  def table_alias_for(reflection, parent, join)
+    name = "#{reflection.plural_name}_#{parent.table_name}"
+    name << "_join" if join
+    name
   end
 end
