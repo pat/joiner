@@ -9,7 +9,7 @@ If this gem is used by anyone other than myself/Thinking Sphinx, I'll be surpris
 It's a gem - so you can either install it yourself, or add it to the appropriate Gemfile or gemspec.
 
 ```term
-gem install joiner --version 0.2.0
+gem install joiner --version 0.3.0
 ```
 
 ## Usage
