@@ -2,6 +2,7 @@ class Joiner::Joins
   JoinDependency = ::ActiveRecord::Associations::JoinDependency
 
   attr_reader :model
+  attr_writer :join_association_class
 
   def initialize(model)
     @model       = model
@@ -16,6 +17,10 @@ class Joiner::Joins
   def alias_for(path)
     return model.table_name if path.empty?
     add_join_to(path).aliased_table_name
+  end
+
+  def join_association_class
+    @join_association_class || JoinDependency::JoinAssociation
   end
 
   def join_values
@@ -45,7 +50,8 @@ class Joiner::Joins
     reflection = find_reflection(step, base_class)
     reflection.check_validity!
 
-    JoinDependency::JoinAssociation.new reflection, [build_join_association(path[1..-1], reflection.klass)].compact
+    join_association_class.new reflection,
+      [build_join_association(path[1..-1], reflection.klass)].compact
   end
 
   def find_join(path, base = nil)
