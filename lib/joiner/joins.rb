@@ -76,7 +76,7 @@ class Joiner::Joins
   end
 
   def find_reflection(name, klass)
-    klass.reflect_on_association(name)
+    klass._reflect_on_association(name)
   end
 
   def table_aliases_for(parent, node)
