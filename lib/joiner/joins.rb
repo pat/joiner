@@ -30,7 +30,9 @@ class Joiner::Joins
   private
 
   def build_join(path)
-    return join if join = find_join(path)
+    if join = find_join(path)
+      return join
+    end
 
     base_node, short_path = relative_path(path)
 
