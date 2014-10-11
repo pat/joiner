@@ -1,3 +1,6 @@
+require 'active_record'
+require 'active_support/ordered_hash'
+
 class Joiner::Joins
   JoinDependency = ::ActiveRecord::Associations::JoinDependency
 
