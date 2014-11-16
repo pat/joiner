@@ -1,3 +1,5 @@
+require 'set'
+
 module Joiner
   class AssociationNotFound < StandardError
   end

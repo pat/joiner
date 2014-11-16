@@ -63,4 +63,15 @@ describe 'Joiner' do
     expect(joiner.alias_for([:comments])).to eq('comments')
     expect(joiner.alias_for([:user, :comments])).to eq('comments_users')
   end
+
+  it 'handles simple and deep chains' do
+    joiner = Joiner::Joins.new Article
+    joiner.add_join_to [:comments]
+    joiner.add_join_to [:comments, :user, :articles]
+
+    expect(joiner.alias_for([:comments])).to eq('comments')
+    expect(joiner.alias_for([:comments, :user, :articles])).to eq(
+      'articles_users'
+    )
+  end
 end
