@@ -33,9 +33,8 @@ class Joiner::Joins
   private
 
   def build_join(path)
-    if join = find_join(path)
-      return join
-    end
+    join = find_join(path)
+    return join unless join.nil?
 
     base_node, short_path = relative_path(path)
 
@@ -62,7 +61,7 @@ class Joiner::Joins
 
     return base if path.empty?
 
-    if next_step = base.children.detect{ |c| c.reflection.name == path.first }
+    if next_step = base.children.detect { |c| c.reflection.name == path.first }
       find_join path[1..-1], next_step
     end
   end
