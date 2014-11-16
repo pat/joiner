@@ -9,17 +9,20 @@ class Joiner::Joins
 
   def initialize(model)
     @model       = model
-    @base        = JoinDependency.new model, [], []
-    @joins_cache = ActiveSupport::OrderedHash.new
+    @joins_cache = Set.new
   end
 
   def add_join_to(path)
-    @joins_cache[path] ||= build_join(path)
+    return if path.empty?
+
+    joins_cache.add path_as_hash(path)
   end
 
   def alias_for(path)
     return model.table_name if path.empty?
-    add_join_to(path).aliased_table_name
+
+    add_join_to path
+    join_association_for(path).tables.first.name
   end
 
   def join_association_class
@@ -27,79 +30,23 @@ class Joiner::Joins
   end
 
   def join_values
-    @base
+    JoinDependency.new model, joins_cache.to_a, []
   end
 
   private
 
-  def build_join(path)
-    join = find_join(path)
-    return join unless join.nil?
+  attr_reader :joins_cache
 
-    base_node, short_path = relative_path(path)
-
-    join = build_join_association(short_path, base_node.base_klass)
-    base_node.children << join
-    construct_tables! base_node, join
-
-    find_join(path)
-  end
-
-  def build_join_association(path, base_class)
-    return nil if path.empty?
-
-    step = path.first
-    reflection = find_reflection(step, base_class)
-    reflection.check_validity!
-
-    join_association_class.new reflection,
-      [build_join_association(path[1..-1], reflection.klass)].compact
-  end
-
-  def find_join(path, base = nil)
-    base ||= @base.join_root
-
-    return base if path.empty?
-
-    if next_step = base.children.detect { |c| c.reflection.name == path.first }
-      find_join path[1..-1], next_step
+  def join_association_for(path)
+    path.inject(join_values.join_root) do |node, piece|
+      node.children.detect { |child| child.reflection.name == piece }
     end
   end
 
-  def relative_path(path)
-    short_path = []
-    test_path = path.dup
-
-    while test_path.size > 1
-      short_path << test_path.pop
-      node = find_join(test_path)
-      return [node, short_path] if node
+  def path_as_hash(path)
+    ending = path.last
+    path[0..-2].reverse.inject(ending) do |key, item|
+      {item => key}
     end
-
-    [@base.join_root, path]
-  end
-
-  def find_reflection(name, klass)
-    klass._reflect_on_association(name)
-  end
-
-  def table_aliases_for(parent, node)
-    node.reflection.chain.map { |reflection|
-      @base.alias_tracker.aliased_table_for(
-        reflection.table_name,
-        table_alias_for(reflection, parent, reflection != node.reflection)
-      )
-    }
-  end
-
-  def construct_tables!(parent, node)
-    node.tables = table_aliases_for(parent, node)
-    node.children.each { |child| construct_tables! node, child }
-  end
-
-  def table_alias_for(reflection, parent, join)
-    name = "#{reflection.plural_name}_#{parent.table_name}"
-    name << "_join" if join
-    name
   end
 end
