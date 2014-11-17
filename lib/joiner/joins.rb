@@ -45,10 +45,7 @@ class Joiner::Joins
   end
 
   def path_as_hash(path)
-    ending = path.last
-    path[0..-2].reverse.inject(ending) do |key, item|
-      {item => key}
-    end
+    path[0..-2].reverse.inject(path.last) { |key, item| {item => key} }
   end
 
   def switch_join_dependency(klass)
