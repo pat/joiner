@@ -1,8 +1,9 @@
 class Joiner::Joins
-  JoinDependency = ::ActiveRecord::Associations::JoinDependency
+  JoinDependency  = ActiveRecord::Associations::JoinDependency
+  JoinAssociation = JoinDependency::JoinAssociation
 
-  attr_reader :model
-  attr_writer :join_association_class
+  attr_reader   :model
+  attr_accessor :join_association_class
 
   def initialize(model)
     @model       = model
@@ -22,12 +23,12 @@ class Joiner::Joins
     join_association_for(path).tables.first.name
   end
 
-  def join_association_class
-    @join_association_class || JoinDependency::JoinAssociation
-  end
-
   def join_values
-    JoinDependency.new model, joins_cache.to_a, []
+    switch_join_dependency join_association_class
+    result = JoinDependency.new model, joins_cache.to_a, []
+    switch_join_dependency JoinAssociation
+
+    result
   end
 
   private
@@ -45,5 +46,12 @@ class Joiner::Joins
     path[0..-2].reverse.inject(ending) do |key, item|
       {item => key}
     end
+  end
+
+  def switch_join_dependency(klass)
+    return unless join_association_class
+
+    JoinDependency.send :remove_const, :JoinAssociation
+    JoinDependency.const_set :JoinAssociation, klass
   end
 end
