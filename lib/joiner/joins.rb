@@ -2,11 +2,7 @@ require 'active_record'
 require 'active_support/ordered_hash'
 
 class Joiner::Joins
-  JoinDependency  = ActiveRecord::Associations::JoinDependency
-  JoinAssociation = JoinDependency::JoinAssociation
-
-  attr_reader   :model
-  attr_accessor :join_association_class
+  attr_reader :model
 
   def initialize(model)
     @model       = model
@@ -27,11 +23,7 @@ class Joiner::Joins
   end
 
   def join_values
-    switch_join_dependency join_association_class
-    result = Joiner::JoinDependency.new model, table, joins_cache.to_a, alias_tracker
-    switch_join_dependency JoinAssociation
-
-    result
+    Joiner::JoinDependency.new model, table, joins_cache.to_a, alias_tracker
   end
 
   private
@@ -46,13 +38,6 @@ class Joiner::Joins
 
   def path_as_hash(path)
     path[0..-2].reverse.inject(path.last) { |key, item| {item => key} }
-  end
-
-  def switch_join_dependency(klass)
-    return unless join_association_class
-
-    JoinDependency.send :remove_const, :JoinAssociation
-    JoinDependency.const_set :JoinAssociation, klass
   end
 
   def table
