@@ -6,5 +6,6 @@ module Joiner
   end
 end
 
+require 'joiner/join_dependency'
 require 'joiner/joins'
 require 'joiner/path'

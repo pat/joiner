@@ -23,12 +23,12 @@ class Joiner::Joins
     return model.table_name if path.empty?
 
     add_join_to path
-    join_association_for(path).tables.first.name
+    join_values.join_association_for(path).tables.first.name
   end
 
   def join_values
     switch_join_dependency join_association_class
-    result = JoinDependency.new model, joins_cache.to_a, []
+    result = Joiner::JoinDependency.new model, table, joins_cache.to_a, alias_tracker
     switch_join_dependency JoinAssociation
 
     result
@@ -38,10 +38,10 @@ class Joiner::Joins
 
   attr_reader :joins_cache
 
-  def join_association_for(path)
-    path.inject(join_values.join_root) do |node, piece|
-      node.children.detect { |child| child.reflection.name == piece }
-    end
+  def alias_tracker
+    ActiveRecord::Associations::AliasTracker.create(
+      model.connection, table.name, []
+    )
   end
 
   def path_as_hash(path)
@@ -53,5 +53,9 @@ class Joiner::Joins
 
     JoinDependency.send :remove_const, :JoinAssociation
     JoinDependency.const_set :JoinAssociation, klass
+  end
+
+  def table
+    @table ||= model.arel_table
   end
 end
