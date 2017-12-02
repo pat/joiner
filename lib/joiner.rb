@@ -1,4 +1,5 @@
 require 'set'
+require 'active_record'
 
 module Joiner
   class AssociationNotFound < StandardError
