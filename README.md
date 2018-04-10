@@ -2,14 +2,14 @@
 
 This gem, abstracted out from [Thinking Sphinx](http://pat.github.io/thinking-sphinx), turns a bunch of association trees from the perspective of a single model and builds a bunch of OUTER JOINs that can be passed into ActiveRecord::Relation's `join` method. You can also find out the generated table aliases for each join, in case you're referring to columns from those joins at some other point.
 
-If this gem is used by anyone other than myself/Thinking Sphinx, I'll be surprised. My reason for pulling it out is so I can more cleanly support Rails' changing approaches to join generation (see v3.1-4.0 compared to v4.1).
+If this gem is used by anyone other than myself/Thinking Sphinx, I'll be surprised. My reason for pulling it out is so I can more cleanly support Rails' changing approaches to join generation (see v3.1-v4.0 compared to v4.1-v5.1 compared to v5.2).
 
 ## Installation
 
 It's a gem - so you can either install it yourself, or add it to the appropriate Gemfile or gemspec.
 
 ```term
-gem install joiner --version 0.3.4
+gem install joiner --version 0.4.0
 ```
 
 ## Usage
@@ -59,4 +59,4 @@ Please note that this project now has a [Contributor Code of Conduct](http://con
 
 ## Licence
 
-Copyright (c) 2013, Joiner is developed and maintained by [Pat Allan](http://freelancing-gods.com), and is released under the open MIT Licence.
+Copyright (c) 2013-2018, Joiner is developed and maintained by [Pat Allan](http://freelancing-gods.com), and is released under the open MIT Licence.
