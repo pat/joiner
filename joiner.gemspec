@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'activerecord', '>= 5.2.beta1'
 
   spec.add_development_dependency 'combustion',  '~> 0.8'
-  spec.add_development_dependency 'rails',       '>= 5.2.0'
+  spec.add_development_dependency 'rails',       '>= 5.2.1'
   spec.add_development_dependency 'rspec-rails', '~> 3'
   spec.add_development_dependency 'sqlite3',     '~> 1.3.8'
 end

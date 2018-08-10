@@ -19,11 +19,11 @@ class Joiner::Joins
     return model.table_name if path.empty?
 
     add_join_to path
-    join_values.join_association_for(path).tables.first.name
+    join_values.join_association_for(path, alias_tracker).tables.first.name
   end
 
   def join_values
-    Joiner::JoinDependency.new model, table, joins_cache.to_a, alias_tracker
+    Joiner::JoinDependency.new model, table, joins_cache.to_a
   end
 
   private
