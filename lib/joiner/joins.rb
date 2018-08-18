@@ -19,11 +19,17 @@ class Joiner::Joins
     return model.table_name if path.empty?
 
     add_join_to path
-    join_values.join_association_for(path, alias_tracker).tables.first.name
+    association_for(path).tables.first.name
   end
 
   def join_values
-    Joiner::JoinDependency.new model, table, joins_cache.to_a
+    if Joiner::JoinDependency.instance_method(:initialize).arity == 3
+      # ActiveRecord 5.2.1+
+      Joiner::JoinDependency.new model, table, joins_cache.to_a
+    else
+      # ActiveRecord 5.2.0
+      Joiner::JoinDependency.new model, table, joins_cache.to_a, alias_tracker
+    end
   end
 
   private
@@ -34,6 +40,16 @@ class Joiner::Joins
     ActiveRecord::Associations::AliasTracker.create(
       model.connection, table.name, []
     )
+  end
+
+  def association_for(path)
+    if Joiner::JoinDependency.instance_method(:initialize).arity == 3
+      # ActiveRecord 5.2.1+
+      join_values.join_association_for path, alias_tracker
+    else
+      # ActiveRecord 5.2.0
+      join_values.join_association_for path
+    end
   end
 
   def path_as_hash(path)
