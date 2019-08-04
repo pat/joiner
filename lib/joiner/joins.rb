@@ -2,6 +2,8 @@ require 'active_record'
 require 'active_support/ordered_hash'
 
 class Joiner::Joins
+  ACTIVE_RECORD_VERSION = Gem::Version.new(ActiveRecord::VERSION::STRING)
+
   attr_reader :model
 
   def initialize(model)
@@ -23,13 +25,9 @@ class Joiner::Joins
   end
 
   def join_values
-    if Joiner::JoinDependency.instance_method(:initialize).arity == 3
-      # ActiveRecord 5.2.1+
-      Joiner::JoinDependency.new model, table, joins_cache.to_a
-    else
-      # ActiveRecord 5.2.0
-      Joiner::JoinDependency.new model, table, joins_cache.to_a, alias_tracker
-    end
+    Joiner::JoinDependency.new(
+      model, table, joins_cache.to_a, Arel::Nodes::OuterJoin
+    )
   end
 
   private
@@ -43,13 +41,7 @@ class Joiner::Joins
   end
 
   def association_for(path)
-    if Joiner::JoinDependency.instance_method(:initialize).arity == 3
-      # ActiveRecord 5.2.1+
-      join_values.join_association_for path, alias_tracker
-    else
-      # ActiveRecord 5.2.0
-      join_values.join_association_for path
-    end
+    join_values.join_association_for path, alias_tracker
   end
 
   def path_as_hash(path)

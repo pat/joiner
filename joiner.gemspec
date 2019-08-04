@@ -13,10 +13,10 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(spec)/})
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency 'activerecord', '>= 5.2.beta1'
+  spec.add_runtime_dependency 'activerecord', '>= 6.0.0.rc2'
 
-  spec.add_development_dependency 'combustion',  '~> 0.8'
-  spec.add_development_dependency 'rails',       '>= 5.2.0'
+  spec.add_development_dependency 'combustion',  '~> 1.1'
+  spec.add_development_dependency 'rails',       '>= 6.0.0.rc2'
   spec.add_development_dependency 'rspec-rails', '~> 3'
-  spec.add_development_dependency 'sqlite3',     '~> 1.3.8'
+  spec.add_development_dependency 'sqlite3',     '~> 1.4'
 end
