@@ -9,7 +9,7 @@ If this gem is used by anyone other than myself/Thinking Sphinx, I'll be surpris
 It's a gem - so you can either install it yourself, or add it to the appropriate Gemfile or gemspec.
 
 ```term
-gem install joiner --version 0.4.2
+gem install joiner --version 0.5.0
 ```
 
 ## Usage
@@ -59,4 +59,4 @@ Please note that this project now has a [Contributor Code of Conduct](http://con
 
 ## Licence
 
-Copyright (c) 2013-2018, Joiner is developed and maintained by [Pat Allan](http://freelancing-gods.com), and is released under the open MIT Licence.
+Copyright (c) 2013-2019, Joiner is developed and maintained by [Pat Allan](http://freelancing-gods.com), and is released under the open MIT Licence.
