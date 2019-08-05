@@ -2,8 +2,6 @@ require 'active_record'
 require 'active_support/ordered_hash'
 
 class Joiner::Joins
-  ACTIVE_RECORD_VERSION = Gem::Version.new(ActiveRecord::VERSION::STRING)
-
   attr_reader :model
 
   def initialize(model)
