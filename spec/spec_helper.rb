@@ -3,7 +3,7 @@ require 'bundler/setup'
 
 require 'combustion'
 
-Combustion.initialize! :all
+Combustion.initialize! :active_record
 
 require 'rspec/rails'
 
