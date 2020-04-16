@@ -17,7 +17,7 @@ gem install joiner --version 0.5.0
 First, create a join collection, based on an ActiveRecord model:
 
 ```ruby
-joiner = Joiner::Joins.new user
+joiner = Joiner::Joins.new User
 ```
 
 Then you can add joins for a given association path. For example, if User has many articles, and articles have many comments:
