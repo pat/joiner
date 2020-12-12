@@ -19,7 +19,7 @@ class Joiner::Joins
     return model.table_name if path.empty?
 
     add_join_to path
-    association_for(path).tables.first.name
+    association_for(path).table.name
   end
 
   def join_values
@@ -33,7 +33,7 @@ class Joiner::Joins
   attr_reader :joins_cache
 
   def alias_tracker
-    ActiveRecord::Associations::AliasTracker.create(
+    Joiner::AliasTracker.create(
       model.connection, table.name, []
     )
   end
