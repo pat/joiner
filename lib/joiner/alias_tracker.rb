@@ -4,7 +4,7 @@ require "active_support/core_ext/string/conversions"
 
 # This code is taken straight from Rails, prior to v6.1.0.
 # I'm maintaining a copy here to save myself having to work through aliasing
-# logic myself - there's a good chance I don't need all of thiis, but it'll do
+# logic myself - there's a good chance I don't need all of this, but it'll do
 # to get this gem working with Rails 6.1.
 
 class Joiner::AliasTracker # :nodoc:
