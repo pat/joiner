@@ -28,6 +28,15 @@ describe 'Joiner' do
     expect(sql).to match(/LEFT OUTER JOIN \"comments\"/)
   end
 
+  it "expands a has-many-through to separate associations" do
+    joiner = Joiner::Joins.new User
+    joiner.add_join_to [:article_comments]
+
+    sql = User.joins(joiner.join_values).to_sql
+    expect(sql).to match(/LEFT OUTER JOIN \"articles\"/)
+    expect(sql).to match(/LEFT OUTER JOIN \"comments\"/)
+  end
+
   it "handles a belongs to association" do
     joiner = Joiner::Joins.new Comment
     joiner.add_join_to [:article]
